@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/background_image.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_arrow_back.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_audiotrack.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_folder.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_fullscreen.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_fullscreen_exit.xml" value="0.1398148148148148" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_lock.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_lock_open.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_screen_rotation.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_volume_off_24.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/ic_volume_up_24.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/thumb.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/drawable/track.xml" value="0.19895833333333332" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/audio_track_dialog.xml" value="0.1" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/custom_player_control_view.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/custom_player_control_view2.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/details_bottomsheet_dialog.xml" value="0.25" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/folder_item.xml" value="0.16" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/fragment_folder.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/fragment_home.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/fragment_player.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/fragment_settings.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/settings_item.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/theme_dialog.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/layout/video_item.xml" value="0.25" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/menu/app_menu.xml" value="0.17864583333333334" />
+        <entry key="..\:/Projects/Android Projects/KVPlayer/app/src/main/res/menu/popup_menu.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/folderFragment">
+
+    <fragment
+        android:id="@+id/folderFragment"
+        android:name="com.lasuak.kvplayer.fragments.FolderFragment"
+        android:label="Folders"
+        tools:layout="@layout/fragment_folder">
+        <action
+            android:id="@+id/action_folderFragment_to_videoFragment"
+            app:destination="@id/videoFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_folderFragment_to_settings"
+            app:destination="@id/settings"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/videoFragment"
+        android:name="com.lasuak.kvplayer.fragments.VideoFragment"
+        android:label="{folderName}"
+        tools:layout="@layout/fragment_video">
+        <action
+            android:id="@+id/action_videoFragment_to_playerFragment"
+            app:destination="@id/playerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+        <argument
+            android:name="folderName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_videoFragment_to_settings"
+            app:destination="@id/settings"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.lasuak.kvplayer.fragments.PlayerFragment"
+        android:label="{videoName}"
+        tools:layout="@layout/fragment_player" >
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <argument
+            android:name="videoName"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.lasuak.kvplayer.fragments.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>
