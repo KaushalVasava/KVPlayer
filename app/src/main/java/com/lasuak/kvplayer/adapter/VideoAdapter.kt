@@ -9,27 +9,20 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.model.Video
-import com.lasuak.kvplayer.model.shareVideo
-import com.lasuak.kvplayer.model.showDetailsDialog
 import com.lasuak.kvplayer.viewmodel.VideoViewModel
 import java.util.ArrayList
 
 class VideoAdapter constructor(
-    private var context: Context, private var list: ArrayList<Video>,
+    private var context: Context,var viewModel: VideoViewModel, private var list: ArrayList<Video>,
     listener1: VideoListener
 ) :
     RecyclerView.Adapter<VideoAdapter.VideoViewHolder?>() {
     private val listener: VideoListener = listener1
-    lateinit var viewGroup: ViewGroup
-    lateinit var viewModel: VideoViewModel
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.video_item, parent, false)
@@ -40,8 +33,7 @@ class VideoAdapter constructor(
         holder.videoTitle.text = list[position].name
         holder.videoDuration.text =
             DateUtils.formatElapsedTime(list[position].duration / 1000)
-                .toString()//formattedTime(list[position].duration!!.toInt() / 1000)
-
+                .toString()
         Glide.with(context).load(list[position].path)
             .into(holder.videoImage)
 
@@ -56,11 +48,12 @@ class VideoAdapter constructor(
             popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
             popupMenu.show()
             popupMenu.setOnMenuItemClickListener { item ->
-                //   viewModel = ViewModelProvider(view).get(VideoViewModel::class.java)
-//                viewModel = ViewModelProvider.Factory()
                 when (item.itemId) {
-                    R.id.details -> showDetailsDialog(context, list, position)
-                    R.id.share -> shareVideo(context, list, position)
+                    R.id.details ->viewModel.showDetailsDialog(context, list, position)
+                    R.id.share -> viewModel.shareVideo(context, list, position)
+                    R.id.delete -> {
+                        listener.onItemDeleteClicked(position)
+                    }
                 }
                 true
             }
@@ -89,6 +82,5 @@ class VideoAdapter constructor(
 
 interface VideoListener {
     fun onItemClicked(position: Int, id: Long)
-    fun onAnyItemLongClicked(position: Int)
     fun onItemDeleteClicked(position: Int)
 }

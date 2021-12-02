@@ -9,7 +9,8 @@
         app:showAsAction="ifRoom|collapseActionView" />
     <item android:id="@+id/action_settings"
         android:title="Setting"
-        android:icon="@drawable/ic_menu"
-        app:showAsAction="ifRoom"
+       />
+    <item android:id="@+id/online_play"
+        android:title="online"
         />
 </menu>

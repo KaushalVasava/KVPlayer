@@ -1,15 +1,11 @@
 package com.lasuak.kvplayer.fragments
 
-import android.annotation.SuppressLint
-import android.content.ContentUris
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,19 +14,16 @@ import com.lasuak.kvplayer.adapter.VideoAdapter
 import com.lasuak.kvplayer.adapter.VideoListener
 import com.lasuak.kvplayer.databinding.FragmentVideoBinding
 import com.lasuak.kvplayer.model.Video
-import java.io.File
+import com.lasuak.kvplayer.viewmodel.VideoViewModel
+import com.lasuak.kvplayer.viewmodel.VideoViewModel.Companion.videoList
 import java.util.*
 import kotlin.collections.ArrayList
 
 class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
     SearchView.OnQueryTextListener {
     private lateinit var binding: FragmentVideoBinding
-    private lateinit var adapter: VideoAdapter
     private val args: VideoFragmentArgs by navArgs()
-
-    companion object {
-        var videoList = ArrayList<Video>()
-    }
+    private lateinit var viewModel: VideoViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,13 +33,13 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
         binding = FragmentVideoBinding.inflate(inflater, container, false)
 
         setHasOptionsMenu(true)
-
-        videoList = getVideo(requireContext(), args.folderId)
+        viewModel = ViewModelProvider(this).get(VideoViewModel::class.java)
+        videoList = viewModel.getVideo(requireContext(), args.folderId)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        adapter = VideoAdapter(requireContext(), videoList, this)
-        binding.recyclerView.adapter = adapter
+        viewModel.adapter = VideoAdapter(requireContext(),viewModel,videoList, this)
+        binding.recyclerView.adapter = viewModel.adapter
 
         return binding.root
     }
@@ -67,6 +60,10 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
             val action = VideoFragmentDirections.actionVideoFragmentToSettings()
             findNavController().navigate(action)
         }
+        if(item.itemId==R.id.online_play){
+            val action = VideoFragmentDirections.actionVideoFragmentToPlayerFragment(-1,"ON")
+            findNavController().navigate(action)
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -82,89 +79,9 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
                 myFiles.add(item)
             }
         }
-        adapter.updateList(myFiles)
+        viewModel.adapter.updateList(myFiles)
         return true
     }
-
-    @SuppressLint("Recycle")
-    fun getVideo(context: Context, folderId: Long): ArrayList<Video> {
-        val list = ArrayList<Video>()
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Video.Media.getContentUri(
-                MediaStore.VOLUME_EXTERNAL_PRIMARY
-            )
-        } else {
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        }
-
-        val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            arrayOf(
-                MediaStore.Video.Media.TITLE,
-                MediaStore.Video.Media.RELATIVE_PATH,
-                MediaStore.Video.Media.DURATION,
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.SIZE,
-                MediaStore.Video.VideoColumns.MIME_TYPE,
-                MediaStore.Video.VideoColumns.DATE_ADDED,
-                MediaStore.Video.VideoColumns.RESOLUTION,
-                MediaStore.Video.VideoColumns.HEIGHT,
-                MediaStore.Video.VideoColumns.WIDTH
-            )
-        } else {
-            @Suppress("deprecation")
-            arrayOf(
-                MediaStore.Video.Media.TITLE,
-                MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.DURATION,
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.SIZE,
-                MediaStore.Video.VideoColumns.MIME_TYPE,
-                MediaStore.Video.Media.DATE_ADDED,
-                MediaStore.Video.VideoColumns.RESOLUTION,
-                MediaStore.Video.VideoColumns.HEIGHT,
-                MediaStore.Video.VideoColumns.WIDTH
-            )
-        }
-
-        val cursor = context.contentResolver.query(
-            uri, projection,
-            MediaStore.Video.Media.BUCKET_ID + " like? ", arrayOf(folderId.toString()), null
-        )
-
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-
-                val path: String
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    path = ContentUris.withAppendedId(uri, cursor.getLong(3)).toString()
-                    Log.d(
-                        "PATH", "${cursor.getString(4)}\n${cursor.getString(5)}\n" +
-                                "${cursor.getString(6)}\n${cursor.getString(7)}\n"
-                    )
-                } else {
-                    path = cursor.getString(2)
-                }
-                list.add(
-                    Video(
-                        cursor.getString(0),
-                        path,
-                        cursor.getLong(2),
-                        cursor.getLong(3),
-                        cursor.getDouble(4),
-                        cursor.getString(5),
-                        cursor.getString(6),
-                        cursor.getString(7),
-                        cursor.getInt(8),
-                        cursor.getInt(9)
-                    )
-                )
-
-            }
-        }
-        cursor!!.close()
-        return list
-    }
-
     override fun onItemClicked(position: Int, id: Long) {
         val action = VideoFragmentDirections.actionVideoFragmentToPlayerFragment(
             position,
@@ -173,9 +90,7 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
         findNavController().navigate(action)
     }
 
-    override fun onAnyItemLongClicked(position: Int) {
-    }
-
     override fun onItemDeleteClicked(position: Int) {
+        viewModel.deleteDialog(requireContext(),position,viewLifecycleOwner)
     }
 }

@@ -66,7 +66,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), SettingListener {
                    // R.id.defaultTheme -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM //system theme
                     R.id.nightTheme -> AppCompatDelegate.MODE_NIGHT_YES //dark theme
                     R.id.lightTheme -> AppCompatDelegate.MODE_NIGHT_NO //light theme
-                    else -> AppCompatDelegate.MODE_NIGHT_NO
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                 }
                 themeSelectedId = selectedId
             }
@@ -76,6 +76,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), SettingListener {
         builder.setView(themeDialog)
             .setTitle("Select Theme")
             .setPositiveButton("Apply") { dialog, _ ->
+                requireActivity().setTheme(R.style.Theme_KVPlayer)
                 AppCompatDelegate.setDefaultNightMode(theme)
 
                 settingList.removeAt(0)
@@ -84,8 +85,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings), SettingListener {
                 adapter.notifyDataSetChanged()
                 val editor =
                     requireActivity().getSharedPreferences("THEME", MODE_PRIVATE).edit()
-                editor.putInt("theme", storeTheme)
-                //editor.putInt("colorNo", whichTheme)
+                editor.putInt("theme", themeSelectedId)
+//                editor.putInt("colorNo", themeSelectedId)
                 editor.apply()
                 dialog.dismiss()
 

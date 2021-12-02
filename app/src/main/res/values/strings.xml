@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">KVPlayer</string>
-    <string name="delete_from_device">delete_from_device</string>
-    <string name="share_video">share_video</string>
-    <string name="details">details</string>
+    <string name="delete_from_device">Delete from Device</string>
+    <string name="share_video">Share</string>
+    <string name="details">Properties</string>
     <string name="file_provider">com.lasuak.kvplayer.fileprovider</string>
 </resources>

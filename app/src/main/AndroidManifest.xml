@@ -3,36 +3,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lasuak.kvplayer">
 
-<!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"-->
-<!--        tools:ignore="ProtectedPermissions" />-->
+    <!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"-->
+    <!--        tools:ignore="ProtectedPermissions" />-->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.KVPlayer">
+        android:theme="@style/Theme.KVPlayer"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
         <activity
             android:name=".MainActivity"
-            android:exported="true" android:configChanges="screenSize|orientation|uiMode">
+            android:configChanges="screenSize|orientation|uiMode"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.OPENABLE" />
+
+                <data android:mimeType="video/mp4" />
+                <data android:mimeType="video/x-matroska" />
+                <data android:mimeType="video/mkv" />
+                <data android:pathPattern=".*\\.mp4" />
+                <data android:pathPattern=".*\\..*\\.mp4" />
+                <data android:pathPattern=".*\\..*\\..*\\.mp4" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.mp4" />
+                <data android:pathPattern=".*\\.mkv" />
+                <data android:pathPattern=".*\\..*\\.mkv" />
+                <data android:pathPattern=".*\\..*\\..*\\.mkv" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.mkv" />
+            </intent-filter>
+        </activity>
         <provider
-            android:authorities="com.lasuak.kvplayer.fileprovider"
             android:name="androidx.core.content.FileProvider"
+            android:authorities="com.lasuak.kvplayer.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_path"/>
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_path" />
         </provider>
         <meta-data
             android:name="preloaded_fonts"
