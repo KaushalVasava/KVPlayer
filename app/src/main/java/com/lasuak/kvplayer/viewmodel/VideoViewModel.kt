@@ -21,6 +21,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.adapter.VideoAdapter
+import com.lasuak.kvplayer.databinding.DetailsBottomsheetDialogBinding
 import com.lasuak.kvplayer.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -94,7 +95,7 @@ class VideoViewModel : ViewModel() {
                 path = FileProvider.getUriForFile(
                     context,
                     context.getString(R.string.file_provider),
-                    File(lists[position].path!!)
+                    File(lists[position].path)
                 )
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -114,39 +115,39 @@ class VideoViewModel : ViewModel() {
     }
 
     //music information dialog
-    @SuppressLint("SetTextI18n")
     fun showDetailsDialog(context: Context, lists: ArrayList<Video>, position: Int) {
         val detailsDialog = Dialog(context)
         detailsDialog.setContentView(R.layout.details_bottomsheet_dialog)
+
         val textPath = detailsDialog.findViewById<TextView>(R.id.filePath)
         val textName = detailsDialog.findViewById<TextView>(R.id.fileName)
         val textFormat = detailsDialog.findViewById<TextView>(R.id.fileFormat)
         val txtSize = detailsDialog.findViewById<TextView>(R.id.fileSize)
         val btnOk = detailsDialog.findViewById<MaterialButton>(R.id.okBtn)
         val resolution = detailsDialog.findViewById<TextView>(R.id.fileResolution)
-        val duration = detailsDialog.findViewById<TextView>(R.id.fileLength)
+        val duration = detailsDialog.findViewById<TextView>(R.id.fileDuration)
         val date_added = detailsDialog.findViewById<TextView>(R.id.fileDate)
 
-        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val path ="File Path : "+ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getRealPath(Uri.parse(lists[position].path), context)
         } else lists[position].path
-        textPath!!.text = "File Path : $path"
-        textName!!.text = "Name : " + lists[position].name
-        val fileFormat = "File Format : " + lists[position].type
+        textPath!!.text = path
+        textName!!.text = lists[position].name
+        val fileFormat = lists[position].type
         textFormat!!.text = fileFormat
         date_added.text = getDate(lists[position].date_added.toLong()).toString()
         val size:String
        // val length = "File Length : " + "%.2f"(lists[position].length!!.toFloat() / (1024 * 1024)) + " mb"
         if(lists[position].size>1000*1000*1000){
             Log.d("TAG", "showDetailsDialog: ")
-            size = String.format("%.2f",(lists[position].size.toFloat() /(1000*1000*1000))) + " GB"
+            size =String.format("%.2f",(lists[position].size.toFloat() /(1000*1000*1000))) + " GB"
         }else{
-            size = String.format("%.2f",(lists[position].size.toFloat() /(1000*1000))) + "MB"
+            size =String.format("%.2f",(lists[position].size.toFloat() /(1000*1000))) + "MB"
         }
-        txtSize!!.text = "File size : $size"
+        txtSize!!.text = size
 
-        resolution.text="Resolution : "+ lists[position].resolution.toString()+" px"
-        duration.text ="Length : "+ DateUtils.formatElapsedTime(lists[position].duration / 1000)
+        resolution.text=lists[position].resolution.toString()
+        duration.text =DateUtils.formatElapsedTime(lists[position].duration / 1000)
         //builder.show()
         btnOk!!.setOnClickListener {
             detailsDialog.dismiss()
@@ -180,7 +181,8 @@ class VideoViewModel : ViewModel() {
                 MediaStore.Video.VideoColumns.DATE_ADDED,
                 MediaStore.Video.Media.RESOLUTION,
                 MediaStore.Video.VideoColumns.HEIGHT,
-                MediaStore.Video.VideoColumns.WIDTH
+                MediaStore.Video.VideoColumns.WIDTH,
+                MediaStore.Video.Media.DISPLAY_NAME
             )
         } else {
             @Suppress("deprecation")
@@ -209,12 +211,8 @@ class VideoViewModel : ViewModel() {
                 val path: String
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     path = ContentUris.withAppendedId(uri, cursor.getLong(3)).toString()
-                    Log.d(
-                        "PATH", "${cursor.getString(4)}\n${cursor.getString(5)}\n" +
-                                "${cursor.getString(6)}\n${cursor.getString(7)}\n"
-                    )
                 } else {
-                    path = cursor.getString(2)
+                    path = cursor.getString(1)
                 }
                 list.add(
                     Video(

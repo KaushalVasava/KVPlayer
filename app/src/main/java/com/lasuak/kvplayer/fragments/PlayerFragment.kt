@@ -47,25 +47,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         (activity as AppCompatActivity).supportActionBar!!.hide()
 
         position = args.position
-//        if(position==-1)
-//        {
-//            Log.d("TAG", "onCreateView: get it")
-////            val uri = "https://www.youtube.com/watch?v=SpzN27a51H8"
-//            val uri = args.videoName
-//            val exoplayer = ExoPlayer.Builder(requireContext()).build()
-//            binding.videoView.player= exoplayer
-//            val mediaItem = MediaItem.fromUri(uri)
-//            exoplayer.addMediaItem(mediaItem)
-//            exoplayer.prepare()
-//            exoplayer.play()
-//        }
-//        else {
-        //swipe gesture for next and previous song and back to home fragment
-//        gestureDetector = GestureDetector(requireContext(), this)
-//        binding.videoView.setOnTouchListener { v, event ->
-//            onTouchEvent(event)
-//            true
-//        }
 
         viewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
         if (args.videoName == "EXTERNAL")

@@ -14,7 +14,7 @@ import kotlin.collections.ArrayList
 
 class FolderAdapter constructor(
     private var context: Context, private var list: ArrayList<Folder>,
-    private var listener1: FolderListener
+    listener1: FolderListener
 ) : RecyclerView.Adapter<FolderAdapter.FolderViewHolder?>() {
 
     private val listener: FolderListener = listener1
