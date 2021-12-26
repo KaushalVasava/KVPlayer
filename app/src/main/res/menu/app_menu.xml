@@ -10,7 +10,7 @@
     <item android:id="@+id/action_settings"
         android:title="Setting"
        />
-    <item android:id="@+id/online_play"
-        android:title="online"
+    <item android:id="@+id/online"
+        android:title="online stream"
         />
 </menu>

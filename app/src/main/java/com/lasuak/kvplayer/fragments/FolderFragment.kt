@@ -1,10 +1,12 @@
 package com.lasuak.kvplayer.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -12,7 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.dialog.MaterialDialogs
 import com.lasuak.kvplayer.MainActivity.Companion.uri
+import com.lasuak.kvplayer.MainActivity.Companion.video
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.adapter.FolderAdapter
 import com.lasuak.kvplayer.adapter.FolderListener
@@ -39,22 +44,37 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener,
         var folderList = mutableListOf<Folder>()
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: ")
+       // if(mStoragePermissionGranted)
+          refresh()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "onCreateView: ")
         // Inflate the layout for this fragment
         binding = FragmentFolderBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         //viewModel = ViewModelProvider(this).get(FolderViewModel::class.java)
+        refresh()
+        //}
+        if(video !=null){
+            val position = 0
+            globalList.add(0, video!!)
+            val action = FolderFragmentDirections.actionFolderFragmentToPlayerFragment(position,
+                "EXTERNAL")
+            findNavController().navigate(action)
+            video = null
+        }
         if (uri != null) {
             var position = -1
-            Log.d("TAG", "onCreateView: uri not null $uri")
             globalList = viewModel.getAllVideo(requireContext())
             for (index in 0 until globalList.size) {
-                Log.d("TAG", "onCreateView: ${globalList[index].name}")
                 if (uri.toString().contains(globalList[index].name)) {
-                    Log.d("TAG", "onCreateView: matched")
                     position = index
                 }
             }
@@ -62,27 +82,21 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener,
                 FolderFragmentDirections.actionFolderFragmentToPlayerFragment(position, "EXTERNAL")
             findNavController().navigate(action)
             uri = null
-        } else {
-            getPermissions()
-            if (mStoragePermissionGranted) {
-                viewModel.getFolders().observe(viewLifecycleOwner, { folder ->
-                    // Update the UI
-                    Log.i(TAG, "Received contacts from view model")
-                    folderList.clear()
-                    folderList.addAll(folder)
-                    adapter.notifyDataSetChanged()
-                })
-            }
-//            viewModel.checkAppPermission(
-//                requireContext(),
-//                requireActivity(),
-//                binding,
-//                this@FolderFragment
-//            )
         }
         return binding.root
     }
 
+    private fun refresh(){
+        getPermissions()
+        if (mStoragePermissionGranted) {
+            viewModel.getFolders().observe(viewLifecycleOwner, { folder ->
+                // Update the UI
+                folderList.clear()
+                folderList.addAll(folder)
+                adapter.notifyDataSetChanged()
+            })
+        }
+    }
     private fun initFolder() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = FolderAdapter(requireContext(), folderList as ArrayList<Folder>, this)
@@ -151,7 +165,7 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener,
                     Log.d(TAG, "onRequestPermissionsResult: permission granted")
                     mStoragePermissionGranted = true
                     //initialize our map
-                  //  initFolder()
+                    //  initFolder()
                 }
             }
         }
@@ -174,6 +188,22 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener,
             val action = FolderFragmentDirections.actionFolderFragmentToSettings()
             findNavController().navigate(action)
         }
+        if(item.itemId == R.id.online){
+            var editText="ONLINE"
+            val inputEditTextField = EditText(requireActivity())
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Online Stream")
+                .setMessage("Message")
+                .setView(inputEditTextField)
+                .setPositiveButton("OK") { _, _ ->
+                    editText = inputEditTextField .text.toString()
+                    val action=  FolderFragmentDirections.actionFolderFragmentToPlayerFragment(-1,editText)
+                    findNavController().navigate(action)
+                }
+                .setNegativeButton("Cancel", null)
+                .create()
+            dialog.show()
+          }
         return super.onOptionsItemSelected(item)
     }
 

@@ -1,5 +1,6 @@
 package com.lasuak.kvplayer.fragments
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.media.AudioManager
 import android.os.Build
@@ -8,23 +9,23 @@ import android.util.Log
 import android.view.*
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.lasuak.kvplayer.R
-import com.lasuak.kvplayer.databinding.FragmentPlayerBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.lasuak.kvplayer.R
+import com.lasuak.kvplayer.databinding.FragmentPlayerBinding
 import com.lasuak.kvplayer.fragments.FolderFragment.Companion.globalList
+import com.lasuak.kvplayer.fragments.VideoFragment.Companion.videoList
 import com.lasuak.kvplayer.viewmodel.PlayerViewModel
 import com.lasuak.kvplayer.viewmodel.PlayerViewModel.Companion.isFullscreen
 import com.lasuak.kvplayer.viewmodel.PlayerViewModel.Companion.position
-import com.lasuak.kvplayer.viewmodel.VideoViewModel.Companion.videoList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class PlayerFragment : Fragment(R.layout.fragment_player) {
@@ -32,11 +33,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private val args: PlayerFragmentArgs by navArgs()
     private lateinit var audioManager: AudioManager
     private lateinit var viewModel: PlayerViewModel
-    //    private lateinit var gestureDetector: GestureDetector
+    private lateinit var gestureDetector: GestureDetector
     //private var brightness: Int=255
 
-
-    @RequiresApi(Build.VERSION_CODES.M)
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,44 +48,68 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         position = args.position
 
-        viewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
-        if (args.videoName == "EXTERNAL")
-               videoList= globalList
-        viewModel.checkOrientation(requireActivity())
-        viewModel.createPlayer(
-            requireContext(),
-            requireActivity(),
-            binding,
-            position
-        )
+        if(position == -1) {
 
-        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(
-                seekBar: SeekBar?,
-                progress: Int,
-                fromUser: Boolean
-            ) {
-                val layout = requireActivity().window.attributes
-                layout.screenBrightness = progress / 100.toFloat()
-                binding.lightText.text = progress.toString()
-                //1F
-                requireActivity().window.attributes = layout
-            }
+            val youtubeLink = "http://videocdn.bodybuilding.com/video/mp4/62000/62792m.mp4"
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-            }
-        })
-        binding.seekBarVolume.setOnSeekBarChangeListener(
-            object : SeekBar.OnSeekBarChangeListener {
+                //            val youtubeLink =
+//                args.videoName
+
+//            object : YouTubeExtractor(this) {
+//                fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, vMeta: VideoMeta?) {
+//                    if (ytFiles != null) {
+//                        val itag = 22
+//                        val downloadUrl: String = ytFiles[itag].getUrl()
+//                    }
+//                }
+//            }.extract(youtubeLink)
+            val exoPlayer = ExoPlayer.Builder(requireContext()).build()
+            val mediaItem =
+                MediaItem.fromUri(youtubeLink)
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.prepare()
+            exoPlayer.play()
+            binding.videoView.player = exoPlayer
+
+//            val exoplayer = ExoPlayer.Builder(requireContext())
+//            exoplayer.setV
+        }
+        else {
+            viewModel = ViewModelProvider(this).get(PlayerViewModel::class.java)
+            if (args.videoName == "EXTERNAL")
+                videoList = globalList
+            viewModel.checkOrientation(requireActivity())
+            viewModel.createPlayer(
+                requireContext(),
+                requireActivity(),
+                binding,
+                position
+            )
+
+//            gestureDetector = GestureDetector(requireContext(),object:
+//                GestureDetector.SimpleOnGestureListener() {
+//                override fun onDoubleTap(e: MotionEvent?): Boolean {
+//                    Log.d("TAG", "onDoubleTap: ")
+//                    return super.onDoubleTap(e)
+//                }
+//            })
+//            binding.videoView.setOnTouchListener { v, event ->
+//                onTouchEvent(event)
+//                true
+//            }
+
+            binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
-                    newVolume: Int,
+                    progress: Int,
                     fromUser: Boolean
                 ) {
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+                    val layout = requireActivity().window.attributes
+                    layout.screenBrightness = progress / 100.toFloat()
+                    binding.lightText.text = progress.toString()
+                    //1F
+                    requireActivity().window.attributes = layout
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -93,43 +117,62 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 }
-
             })
 
-        binding.backBtn.setOnClickListener {
-            findNavController().popBackStack(R.id.videoFragment, true)
-        }
+            binding.seekBarVolume.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(
+                        seekBar: SeekBar?,
+                        newVolume: Int,
+                        fromUser: Boolean
+                    ) {
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
+                    }
 
-        binding.exoPrev.setOnClickListener {
-            viewModel.previousClicked(requireContext(), requireActivity(), binding)
-        }
-        binding.exoNext.setOnClickListener {
-            viewModel.nextClicked(requireContext(), requireActivity(), binding)
-        }
-        setVisibility()
-        binding.exoFullscreen.setOnClickListener {
-            if (isFullscreen) {
-                viewModel.playInFullScreen(false, binding)
-            } else {
-                viewModel.playInFullScreen(true, binding)
+                    override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                    }
+
+                    override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    }
+
+                })
+
+            binding.backBtn.setOnClickListener {
+                findNavController().popBackStack(R.id.videoFragment, true)
             }
-        }
-        binding.lock.setOnClickListener {
-            viewModel.lockPlayer(requireContext(), binding)
-        }
-        binding.exoScreenRotation.setOnClickListener {
-            viewModel.setRotation(requireActivity())
-        }
+            binding.exoPrev.setOnClickListener {
+                viewModel.previousClicked(requireContext(), requireActivity(), binding)
+            }
+            binding.exoNext.setOnClickListener {
+                viewModel.nextClicked(requireContext(), requireActivity(), binding)
+            }
+            setVisibility()
+            binding.exoFullscreen.setOnClickListener {
+                if (isFullscreen) {
+                    viewModel.playInFullScreen(false, binding)
+                } else {
+                    viewModel.playInFullScreen(true, binding)
+                }
+            }
+            binding.lock.setOnClickListener {
+                viewModel.lockPlayer(requireContext(), binding)
+            }
+            binding.exoScreenRotation.setOnClickListener {
+                viewModel.setRotation(requireActivity())
+            }
 
-        binding.exoMute.setOnClickListener {
-            viewModel.muteClicked(audioManager, binding)
-        }
-        binding.exoAudioTrack.setOnClickListener {
-            viewModel.setAudioTrack(requireContext())
-        }
+            binding.exoMute.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    viewModel.muteClicked(audioManager, binding)
+                }
+            }
+            binding.exoAudioTrack.setOnClickListener {
+                viewModel.setAudioTrack(requireContext())
+            }
 
-        binding.exoSubtitle.setOnClickListener {
-            viewModel.setSubtitle(requireContext())
+            binding.exoSubtitle.setOnClickListener {
+                viewModel.setSubtitle(requireContext())
+            }
         }
         return binding.root
     }

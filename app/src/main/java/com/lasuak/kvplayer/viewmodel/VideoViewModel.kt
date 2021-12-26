@@ -22,6 +22,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.adapter.VideoAdapter
 import com.lasuak.kvplayer.databinding.DetailsBottomsheetDialogBinding
+import com.lasuak.kvplayer.fragments.VideoFragment.Companion.videoList
+import com.lasuak.kvplayer.model.Folder
 import com.lasuak.kvplayer.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,10 +41,6 @@ class VideoViewModel : ViewModel() {
 
     lateinit var adapter: VideoAdapter
 
-    companion object {
-        //        var videoList = MutableLiveData<ArrayList<Video>>()
-        var videoList = ArrayList<Video>()
-    }
 
     //get storage path of media file for android Q and above
     private fun getRealPath(uri: Uri, context: Context): String? {
@@ -108,7 +106,7 @@ class VideoViewModel : ViewModel() {
                     .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     .putExtra(
                         Intent.EXTRA_STREAM,
-                        path!!
+                        Uri.parse(path!!.toString())
                     ), "Sharing ${lists[position].name}"
             )
         )
@@ -128,7 +126,7 @@ class VideoViewModel : ViewModel() {
         val duration = detailsDialog.findViewById<TextView>(R.id.fileDuration)
         val date_added = detailsDialog.findViewById<TextView>(R.id.fileDate)
 
-        val path ="File Path : "+ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val path = "File Path : " + if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getRealPath(Uri.parse(lists[position].path), context)
         } else lists[position].path
         textPath!!.text = path
@@ -136,29 +134,34 @@ class VideoViewModel : ViewModel() {
         val fileFormat = lists[position].type
         textFormat!!.text = fileFormat
         date_added.text = getDate(lists[position].date_added.toLong()).toString()
-        val size:String
-       // val length = "File Length : " + "%.2f"(lists[position].length!!.toFloat() / (1024 * 1024)) + " mb"
-        if(lists[position].size>1000*1000*1000){
+        val size: String
+        // val length = "File Length : " + "%.2f"(lists[position].length!!.toFloat() / (1024 * 1024)) + " mb"
+        if (lists[position].size > 1000 * 1000 * 1000) {
             Log.d("TAG", "showDetailsDialog: ")
-            size =String.format("%.2f",(lists[position].size.toFloat() /(1000*1000*1000))) + " GB"
-        }else{
-            size =String.format("%.2f",(lists[position].size.toFloat() /(1000*1000))) + "MB"
+            size = String.format(
+                "%.2f",
+                (lists[position].size.toFloat() / (1000 * 1000 * 1000))
+            ) + " GB"
+        } else {
+            size = String.format("%.2f", (lists[position].size.toFloat() / (1000 * 1000))) + "MB"
         }
         txtSize!!.text = size
 
-        resolution.text=lists[position].resolution.toString()
-        duration.text =DateUtils.formatElapsedTime(lists[position].duration / 1000)
+        resolution.text = lists[position].resolution.toString()
+        duration.text = DateUtils.formatElapsedTime(lists[position].duration / 1000)
         //builder.show()
         btnOk!!.setOnClickListener {
             detailsDialog.dismiss()
         }
         detailsDialog.show()
     }
-    private fun getDate(date : Long): String? {
+
+    private fun getDate(date: Long): String? {
         var tempDate = date
-        tempDate*= 1000L
+        tempDate *= 1000L
         return SimpleDateFormat("d MMM yyyy, hh:mm aa", Locale.getDefault()).format(Date(tempDate))
     }
+
     @SuppressLint("Recycle")
     fun getVideo(context: Context, folderId: Long): ArrayList<Video> {
         val list = ArrayList<Video>()
@@ -207,7 +210,6 @@ class VideoViewModel : ViewModel() {
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-
                 val path: String
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     path = ContentUris.withAppendedId(uri, cursor.getLong(3)).toString()
@@ -228,7 +230,6 @@ class VideoViewModel : ViewModel() {
                         cursor.getInt(9)
                     )
                 )
-
             }
         }
         cursor!!.close()

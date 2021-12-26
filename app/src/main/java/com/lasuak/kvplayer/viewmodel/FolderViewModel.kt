@@ -1,24 +1,23 @@
 package com.lasuak.kvplayer.viewmodel
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import androidx.lifecycle.viewModelScope
 import com.lasuak.kvplayer.model.Folder
 import com.lasuak.kvplayer.model.Video
-import com.lasuak.kvplayer.model.notifyUser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.File
+import java.lang.IllegalArgumentException
 
 private const val TAG = "FolderViewModel"
 
@@ -33,40 +32,38 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
         foldersLiveData.value = setFolders(application.applicationContext)
     }
 
+    private fun getRealPath(uri: Uri, context: Context): String? {
+        var realPath: String? = null
+        try {
+            if (uri.scheme!! == "content") {
+                val projection = arrayOf("_data")
+                val cursor = context.contentResolver.query(
+                    uri,
+                    projection, null, null, null
+                )
+                if (cursor != null) {
+                    val id = cursor.getColumnIndexOrThrow("_data")
+                    cursor.moveToNext()
+                    try {
+                        realPath = cursor.getString(id)
+                    } catch (e: Exception) {
+                        realPath = null
+                    } finally {
+                        cursor.close()
+                    }
+                } else if (uri.scheme!!.equals("file")) {
+                    realPath = uri.path!!
+                }
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            realPath = null
+        }
+        return realPath
+    }
+
     fun getFolders(): LiveData<MutableList<Folder>> {
         return foldersLiveData
-    }
-    private fun checkAppPermission() {
-        Dexter.withActivity(getApplication())
-            .withPermissions(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(multiplePermissionsReport: MultiplePermissionsReport) {
-                    // this method is called when all permissions are granted
-                    if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                        //isPermissionGranted = true
-                    }
-                    // check for permanent denial of any permission
-                    else {
-                        // permission is denied , so we have to again show the permission dialog
-                        checkAppPermission()
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    list: List<PermissionRequest>,
-                    permissionToken: PermissionToken
-                ) {
-                    // this method is called when user grants some
-                    // permission and denies some of them.
-                    permissionToken.continuePermissionRequest();
-                }
-            }).withErrorListener { // we are displaying a toast message for error message.
-                notifyUser(getApplication(), "Error occurred! ")
-            }
-            .onSameThread().check()
     }
 
     private fun setFolders(context: Context): MutableList<Folder> {
@@ -243,11 +240,13 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
         val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             arrayOf(
                 MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.RELATIVE_PATH
             )
         } else {
             @Suppress("deprecation")
             arrayOf(
                 MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.DATA
             )
         }
 
@@ -258,7 +257,7 @@ class FolderViewModel(application: Application) : AndroidViewModel(application) 
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                count++
+                    count++
             }
         }
         cursor!!.close()

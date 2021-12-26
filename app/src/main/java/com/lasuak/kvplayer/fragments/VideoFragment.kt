@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -15,7 +14,6 @@ import com.lasuak.kvplayer.adapter.VideoListener
 import com.lasuak.kvplayer.databinding.FragmentVideoBinding
 import com.lasuak.kvplayer.model.Video
 import com.lasuak.kvplayer.viewmodel.VideoViewModel
-import com.lasuak.kvplayer.viewmodel.VideoViewModel.Companion.videoList
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,6 +23,10 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
     private val args: VideoFragmentArgs by navArgs()
     private lateinit var viewModel: VideoViewModel
 
+    companion object {
+        //        var videoList = MutableLiveData<ArrayList<Video>>()
+        var videoList = ArrayList<Video>()
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,10 +62,10 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener,
             val action = VideoFragmentDirections.actionVideoFragmentToSettings()
             findNavController().navigate(action)
         }
-        if(item.itemId==R.id.online_play){
-            val action = VideoFragmentDirections.actionVideoFragmentToPlayerFragment(-1,"ON")
-            findNavController().navigate(action)
-        }
+//        if(item.itemId==R.id.online_play){
+//            val action = VideoFragmentDirections.actionVideoFragmentToPlayerFragment(-1,"ON")
+//            findNavController().navigate(action)
+//        }
         return super.onOptionsItemSelected(item)
     }
 

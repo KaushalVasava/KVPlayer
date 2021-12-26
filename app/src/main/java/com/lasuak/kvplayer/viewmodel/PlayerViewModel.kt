@@ -10,7 +10,6 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -23,7 +22,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.databinding.FragmentPlayerBinding
-import com.lasuak.kvplayer.viewmodel.VideoViewModel.Companion.videoList
+import com.lasuak.kvplayer.fragments.VideoFragment.Companion.videoList
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -83,6 +82,7 @@ class PlayerViewModel : ViewModel() {
                 MediaItem.fromUri(videoList[pos].path)
         exoPlayer!!.setMediaItem(mediaItem)
         exoPlayer!!.prepare()
+//        exoPlayer!!.play()
         binding.videoView.player = exoPlayer
 
         trackSelector = DefaultTrackSelector(context)
@@ -279,21 +279,24 @@ class PlayerViewModel : ViewModel() {
         playClicked()
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun muteClicked(audioManager:AudioManager,binding: FragmentPlayerBinding) {
         if (isMute == 1) { //for mute
-            audioManager.adjustVolume(
-                AudioManager.ADJUST_MUTE,
-                AudioManager.FLAG_PLAY_SOUND
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioManager.adjustVolume(
+                    AudioManager.ADJUST_MUTE,
+                    AudioManager.FLAG_PLAY_SOUND
+                )
+            }
             binding.exoMute.setImageResource(R.drawable.ic_volume_off_24)
             isMute = 0
         } else {
             //for unmute
-            audioManager.adjustVolume(
-                AudioManager.ADJUST_UNMUTE,
-                AudioManager.FLAG_PLAY_SOUND
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioManager.adjustVolume(
+                    AudioManager.ADJUST_UNMUTE,
+                    AudioManager.FLAG_PLAY_SOUND
+                )
+            }
             binding.exoMute.setImageResource(R.drawable.ic_volume_up_24)
             isMute = 1
         }
