@@ -2,6 +2,7 @@ package com.lasuak.kvplayer.fragments
 
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.Context.MODE_PRIVATE
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -26,15 +27,18 @@ import com.lasuak.kvplayer.viewmodel.PlayerViewModel.Companion.isFullscreen
 import com.lasuak.kvplayer.viewmodel.PlayerViewModel.Companion.position
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
-
+private const val TAG= "TAG"
 class PlayerFragment : Fragment(R.layout.fragment_player) {
     private lateinit var binding: FragmentPlayerBinding
     private val args: PlayerFragmentArgs by navArgs()
     private lateinit var audioManager: AudioManager
     private lateinit var viewModel: PlayerViewModel
     private lateinit var gestureDetector: GestureDetector
-    //private var brightness: Int=255
+    companion object{
+        private var brightness = -1.0f
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -110,6 +114,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                     binding.lightText.text = progress.toString()
                     //1F
                     requireActivity().window.attributes = layout
+                    //val prefLight = requireActivity().getSharedPreferences("BRIGHTNESS",MODE_PRIVATE).edit()
+                    brightness = progress/100.toFloat()
+//                    prefLight.putFloat("brightness", brightness)
+//                    prefLight.apply()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -194,11 +202,30 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         //for pause video
         viewModel.exoPlayer!!.playWhenReady = false
         viewModel.exoPlayer!!.playbackState
+        val layout = requireActivity().window.attributes
+        layout.screenBrightness = -1.0f
+        requireActivity().window.attributes = layout
+        Log.d(TAG, "onPause: called $brightness")
+
+        val prefLight = requireActivity().getSharedPreferences("BRIGHTNESS",MODE_PRIVATE).edit()
+        prefLight.putFloat("brightness", brightness)
+        prefLight.apply()
     }
 
     override fun onResume() {
         super.onResume()
         //for resume video
+        val prefLight = requireActivity().getSharedPreferences("BRIGHTNESS", MODE_PRIVATE)
+        val brightness1 = prefLight.getFloat("brightness",-1.0F)
+        Log.d(TAG, "onResume:$brightness1 & $brightness ")
+        val layout = requireActivity().window.attributes
+        layout.screenBrightness = brightness1
+        val tempLight:Int = (100*(brightness1)).roundToInt()
+        Log.d(TAG, "onResume: $tempLight")
+        requireActivity().window.attributes = layout
+        binding.seekBar.progress = tempLight
+        binding.lightText.text = tempLight.toString()
+
         if (viewModel.exoPlayer != null) {
             viewModel.exoPlayer!!.playWhenReady = true
             viewModel.exoPlayer!!.playbackState
@@ -210,7 +237,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         (activity as AppCompatActivity).supportActionBar!!.show()
         viewModel.exoPlayer!!.stop()
         viewModel.exoPlayer!!.release()
-
+brightness=-1.0f
         //this is for orientation change when exit from player fragment
         viewModel.backToDefaultOrientation(requireActivity())
     }
