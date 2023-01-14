@@ -43,13 +43,15 @@
     <fragment
         android:id="@+id/playerFragment"
         android:name="com.lasuak.kvplayer.ui.fragments.PlayerFragment"
-        android:label="{videoName}"
+        android:label=""
         tools:layout="@layout/fragment_player">
+        <argument
+            android:name="folderId"
+            app:argType="long" />
         <argument
             android:name="position"
             app:argType="integer" />
-        <argument
-            android:name="videoName"
-            app:argType="string" />
+        <argument android:name="video"
+            app:argType="com.lasuak.kvplayer.model.Video"/>
     </fragment>
 </navigation>

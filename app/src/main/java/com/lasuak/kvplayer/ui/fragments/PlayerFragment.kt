@@ -1,6 +1,7 @@
 package com.lasuak.kvplayer.ui.fragments
 
 import android.app.Service
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.media.AudioManager
 import android.net.Uri
@@ -27,6 +28,7 @@ import com.lasuak.kvplayer.databinding.FragmentPlayerBinding
 import com.lasuak.kvplayer.model.Video
 import com.lasuak.kvplayer.ui.viewmodel.PlayerViewModel
 import com.lasuak.kvplayer.util.AppUtil
+import com.lasuak.kvplayer.util.VideoUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -38,6 +40,13 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private lateinit var audioManager: AudioManager
     private var exoPlayer: ExoPlayer? = null
     private val videoList = mutableListOf<Video>()
+    private var position: Int = -1
+    private var isFullscreenEnable = false
+    private var isLocked = false
+    private var brightness = -1.0f
+    private var isMuted = false
+    private var isRotated = false
+    private var isSubtitleEnable = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,8 +54,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding = FragmentPlayerBinding.bind(view)
         (activity as AppCompatActivity).supportActionBar?.hide()
         position = args.position
+        if (position != -1) {
+            setUpResultListener()
+        } else {
+            videoList.clear()
+            videoList.addAll(VideoUtil.getVideosByFolder(requireContext(), args.folderId))
+            createPlayer()
+        }
         checkOrientation()
-        setUpResultListener()
         addClickListeners()
         addSeekbarChangeListeners()
         setVisibility()
@@ -55,11 +70,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private fun setInitialData() {
         binding.seekBarVolume.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-
         val layout = requireActivity().window.attributes
         binding.seekBarBrightness.progress = layout.screenBrightness.roundToInt()
-
     }
+
     private fun checkOrientation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val controller = (activity as AppCompatActivity).window.insetsController
@@ -130,7 +144,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     }
 
     private fun addSeekbarChangeListeners() {
-        binding.seekBarBrightness.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.seekBarBrightness.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(
                 seekBar: SeekBar?,
                 progress: Int,
@@ -249,8 +264,13 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             binding.btnLock.visibility = visibility
     }
 
-    private fun createPlayer(position: Int) {
-        val video = videoList[position]
+    private fun createPlayer() {
+        val video = if (position != -1) {
+            videoList[position]
+        } else {
+            position = VideoUtil.findVideoPosition(args.video.id, videoList)
+            args.video
+        }
         exoPlayer = ExoPlayer.Builder(requireContext()).build()
         binding.btnBackName.text = video.name
         val path: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -290,7 +310,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             position = videoList.size - 1
         else
             position--
-        createPlayer(position)
+        createPlayer()
         exoPlayer?.play()
     }
 
@@ -302,7 +322,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         else
             position++
 
-        createPlayer(position)
+        createPlayer()
         exoPlayer?.play()
     }
 
@@ -322,7 +342,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 videoList.clear()
             }
             videoList.addAll(videos)
-            createPlayer(args.position)
+            createPlayer()
         }
     }
 
@@ -429,13 +449,30 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         }
     }
 
-    private var position: Int = -1
-    private var isFullscreenEnable = false
-    private var isLocked = false
-    private var brightness = -1.0f
-    private var isMuted = false
-    private var isRotated = false
-    private var isSubtitleEnable = true
+//    private fun setVideoPositionResult() {
+//        setFragmentResult(
+//            VIDEO_POSITION_BUNDLE_RESULT_KEY,
+//            bundleOf(
+//               VIDEO_POSITION_RESULT_KEY to position,
+//            )
+//        )
+//    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        requireActivity().getSharedPreferences("LAST_VIDEO_DATA", Context.MODE_PRIVATE).edit()
+            .apply {
+                putLong("VIDEO_ID", videoList[position].id)
+                putLong("FOLDER_ID", args.folderId)
+                apply()
+            }
+        (activity as AppCompatActivity).supportActionBar!!.show()
+        exoPlayer?.stop()
+        exoPlayer?.release()
+        brightness = -1.0f
+        //this is for orientation change when exit from player fragment
+        resetOrientation()
+    }
 
     companion object {
         private const val VIDEO_POSITION_BUNDLE_KEY = "video_position_bundle_key"
@@ -445,15 +482,5 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         private const val LOCK_BUNDLE_KEY = "lock_bundle_key"
         private const val SUBTITLE_BUNDLE_KEY = "subtitle_bundle_key"
         private const val BRIGHTNESS_LEVEL_BUNDLE_KEY = "brightness_level_bundle_key"
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as AppCompatActivity).supportActionBar!!.show()
-        exoPlayer?.stop()
-        exoPlayer?.release()
-        brightness = -1.0f
-        //this is for orientation change when exit from player fragment
-        resetOrientation()
     }
 }

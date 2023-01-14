@@ -4,15 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="0dp"
     android:background="?android:attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/img_folder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
+        style="@style/IconButton"
+        android:layout_marginHorizontal="5dp"
         android:contentDescription="@null"
         android:src="@drawable/ic_folder"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,14 +18,9 @@
 
     <TextView
         android:id="@+id/txt_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="7dp"
-        android:gravity="start"
-        android:padding="3dp"
+        style="@style/TextStyle"
+        android:layout_marginHorizontal="8dp"
         android:singleLine="true"
-        android:textColor="?attr/colorOnSecondary"
-        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/txt_total_videos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/img_folder"
@@ -37,16 +29,13 @@
 
     <TextView
         android:id="@+id/txt_total_videos"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:gravity="start"
+        style="@style/TextStyle.Grey"
         android:singleLine="true"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/img_folder"
+        app:layout_constraintStart_toStartOf="@id/txt_name"
         app:layout_constraintTop_toBottomOf="@id/txt_name"
-        tools:text="Total videos" />
+        tools:text="5 videos" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

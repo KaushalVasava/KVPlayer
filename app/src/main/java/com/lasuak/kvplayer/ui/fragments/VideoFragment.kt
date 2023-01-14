@@ -14,19 +14,19 @@ import com.lasuak.kvplayer.ui.adapter.VideoListener
 import com.lasuak.kvplayer.databinding.FragmentVideoBinding
 import com.lasuak.kvplayer.model.Video
 import com.lasuak.kvplayer.ui.viewmodel.VideoViewModel
+import com.lasuak.kvplayer.util.VideoUtil
 
 class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
+
     private lateinit var binding: FragmentVideoBinding
     private val args: VideoFragmentArgs by navArgs()
     private val viewModel: VideoViewModel by viewModels()
     private lateinit var videoAdapter: VideoAdapter
 
     companion object {
-        //        private const val FOLDER_LIST_BUNDLE_KEY = "folder_list_bundle_key"
         const val VIDEO_LIST_BUNDLE_KEY = "video_list_bundle_key"
-
-        //        private const val FOLDER_BUNDLE_KEY = "folder_bundle_key"
         const val VIDEO_BUNDLE_KEY = "video_bundle_key"
+//        const val LAST_VIDEO_POSITION = "last_video_position"
     }
 
     override fun onCreateView(
@@ -34,14 +34,12 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentVideoBinding.inflate(inflater, container, false)
-
         videoAdapter = VideoAdapter(this)
-
         binding.recyclerView.apply {
             setHasFixedSize(true)
             adapter = videoAdapter
         }
-        val videoList = viewModel.getVideosByFolder(requireContext(), args.folderId)
+        val videoList = VideoUtil.getVideosByFolder(requireContext(), args.folderId)
         videoAdapter.submitList(videoList)
         setVideoListResult(videoList)
         return binding.root
@@ -56,11 +54,12 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
         )
     }
 
-    override fun onItemClicked(position: Int, id: Long) {
+    override fun onItemClicked(position: Int, video: Video) {
         val action = VideoFragmentDirections.actionVideoFragmentToPlayerFragment(
-                position,
-                videoAdapter.currentList[position].name
-            )
+            args.folderId,
+            position,
+            video
+        )
         findNavController().navigate(action)
     }
 
@@ -73,6 +72,6 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
     }
 
     override fun shareVideoClicked(video: Video) {
-        viewModel.shareVideo(requireContext(), video)
+        VideoUtil.shareVideo(requireContext(), video)
     }
 }

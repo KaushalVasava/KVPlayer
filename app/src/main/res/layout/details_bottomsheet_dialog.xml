@@ -7,17 +7,16 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingHorizontal="8dp">
 
         <TextView
-            android:id="@+id/dialog_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:id="@+id/txt_dialog_title"
+            style="@style/TextStyle.HeadLine"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
             android:text="@string/details"
             android:textColor="?attr/colorPrimary"
-            android:textSize="24sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -30,205 +29,122 @@
             app:layout_constraintGuide_percent="0.30" />
 
         <TextView
-            android:id="@+id/path_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_path_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="16dp"
             android:text="@string/location"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dialog_label" />
+            app:layout_constraintTop_toBottomOf="@id/txt_dialog_title" />
 
         <TextView
-            android:id="@+id/filePath"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_path"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@id/dialog_label"
+            app:layout_constraintTop_toTopOf="@id/txt_path_label"
             tools:text="File Path" />
 
         <TextView
-            android:id="@+id/name_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_name_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/file_name"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/filePath" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_path" />
 
         <TextView
-            android:id="@+id/fileName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_name"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/filePath"
+            app:layout_constraintTop_toTopOf="@id/txt_name_label"
             tools:text="File Name" />
 
         <TextView
-            android:id="@+id/duration_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_duration_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/length"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fileName" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_name" />
 
         <TextView
-            android:id="@+id/fileDuration"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_duration"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/fileName"
+            app:layout_constraintTop_toTopOf="@id/txt_duration_label"
             tools:text="Length" />
 
         <TextView
-            android:id="@+id/resolution_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_resolution_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/resolution"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fileDuration" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_duration" />
 
         <TextView
-            android:id="@+id/fileResolution"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_resolution"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/fileDuration"
+            app:layout_constraintTop_toTopOf="@id/txt_resolution_label"
             tools:text="Resolution" />
 
         <TextView
-            android:id="@+id/format_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_format_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/format"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fileResolution" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_resolution" />
 
         <TextView
-            android:id="@+id/fileFormat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_format"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@+id/fileResolution"
+            app:layout_constraintTop_toTopOf="@id/txt_format_label"
             tools:text="Format" />
 
         <TextView
-            android:id="@+id/size_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_size_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/size"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fileFormat" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_format" />
 
         <TextView
-            android:id="@+id/fileSize"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_size"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@id/fileFormat"
+            app:layout_constraintTop_toTopOf="@id/txt_size_label"
             tools:text="File Size " />
 
         <TextView
-            android:id="@+id/date_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:gravity="start"
+            android:id="@+id/txt_date_label"
+            style="@style/TextStyle.Bold"
+            android:layout_marginTop="8dp"
             android:text="@string/date"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
-            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/dialog_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fileSize" />
+            app:layout_constraintStart_toStartOf="@id/txt_path_label"
+            app:layout_constraintTop_toBottomOf="@+id/txt_size" />
 
         <TextView
-            android:id="@+id/fileDate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:gravity="start"
-            android:textColor="?attr/colorOnSecondary"
-            android:textSize="16sp"
+            android:id="@+id/txt_date"
+            style="@style/TextStyle.Grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/dialog_guideline"
-            app:layout_constraintTop_toBottomOf="@id/fileSize"
+            app:layout_constraintTop_toTopOf="@id/txt_date_label"
             tools:text="Date" />
 
         <View
@@ -239,14 +155,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/okBtn"
+            android:id="@+id/btn_ok"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginVertical="8dp"
             android:text="@string/ok"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/fileDate" />
+            app:layout_constraintTop_toBottomOf="@id/txt_date" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

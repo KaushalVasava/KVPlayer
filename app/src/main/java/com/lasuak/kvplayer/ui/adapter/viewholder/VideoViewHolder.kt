@@ -27,7 +27,7 @@ class VideoViewHolder(
             if (position != RecyclerView.NO_POSITION) {
                 videoListener.onItemClicked(
                     position,
-                    video.id
+                    video
                 )
             }
         }

@@ -3,9 +3,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="red_200">#DA9FAC</color>
-    <color name="red_500">#B53F47</color>
-    <color name="red_700">#9F3034</color>
+    <color name="red_200">#F8AAAA</color>
+    <color name="red_500">#E8535D</color>
+    <color name="red_700">#C9484D</color>
 
     <color name="red">#F22727</color>
     <color name="blue">#0A21E7</color>

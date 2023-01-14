@@ -1,25 +1,26 @@
 package com.lasuak.kvplayer.ui.fragments
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.ui.adapter.FolderAdapter
 import com.lasuak.kvplayer.ui.adapter.FolderListener
 import com.lasuak.kvplayer.databinding.FragmentFolderBinding
-import com.lasuak.kvplayer.ui.viewmodel.FolderViewModel
+import com.lasuak.kvplayer.util.FolderUtil
 
 class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
+
     private lateinit var binding: FragmentFolderBinding
     private lateinit var folderAdapter: FolderAdapter
-    private val viewModel: FolderViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,63 +33,31 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
             this.adapter = folderAdapter
         }
         checkPermission()
-
-//        if (video != null) {
-//            val position = 0
-//            globalList.add(0, video!!)
-//            val action = FolderFragmentDirections.actionFolderFragmentToPlayerFragment(
-//                position,
-//                "EXTERNAL"
-//            )
-//            findNavController().navigate(action)
-//            video = null
-//        }
-//        if (uri != null) {
-//            var position = -1
-//            globalList = viewModel.getAllVideo(requireContext())
-//            for (index in 0 until globalList.size) {
-//                if (uri.toString().contains(globalList[index].name)) {
-//                    position = index
-//                }
-//            }
-//            val action =
-//                FolderFragmentDirections.actionFolderFragmentToPlayerFragment(position, "EXTERNAL")
-//            findNavController().navigate(action)
-//            uri = null
-//        }
-
+        binding.btnResumeVideo.setOnClickListener {
+            getSharedPrefData()
+        }
         return binding.root
     }
 
-//    private fun refresh() {
-//        viewModel = ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-//            .create(FolderViewModel::class.java)
-//        viewModel.getFolders().observe(viewLifecycleOwner) { folder ->
-//            // Update the UI
-//            folderList.clear()
-//            folderList.addAll(folder)
-//        }
-//    }
 
     private val permissionsResultCallback = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        // Handle Permission granted/rejected
         var mStoragePermissionGranted = false
         permissions.entries.forEach {
             mStoragePermissionGranted = it.value
         }
         if (mStoragePermissionGranted) {
-            val list = viewModel.getAllFolder(requireContext())
+            val list = FolderUtil.getAllFolder(requireContext())
             folderAdapter.submitList(list)
         }
     }
 
     override fun onFolderClicked(position: Int, id: Long) {
         val action = FolderFragmentDirections.actionFolderFragmentToVideoFragment(
-                id,
-                folderAdapter.currentList[position].folderName
-            )
+            id,
+            folderAdapter.currentList[position].folderName
+        )
         findNavController().navigate(action)
     }
 
@@ -110,8 +79,26 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
         if (permission != PackageManager.PERMISSION_GRANTED) {
             permissionsResultCallback.launch(array)
         } else {
-            val list = viewModel.getAllFolder(requireContext())
+            val list = FolderUtil.getAllFolder(requireContext())
             folderAdapter.submitList(list)
+        }
+    }
+
+    private fun getSharedPrefData() {
+        val pref = requireContext().getSharedPreferences("LAST_VIDEO_DATA", Context.MODE_PRIVATE)
+        val videoId = pref.getLong("VIDEO_ID", -1L)
+        val folderId = pref.getLong("FOLDER_ID", -1L)
+        if (folderId == -1L && videoId == -1L) {
+            Toast.makeText(requireContext(), "No recently played video found", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            val video = FolderUtil.findVideo(requireContext(), folderId, videoId)
+            val action = FolderFragmentDirections.actionFolderFragmentToPlayerFragment(
+                folderId,
+                -1,
+                video
+            )
+            findNavController().navigate(action)
         }
     }
 }

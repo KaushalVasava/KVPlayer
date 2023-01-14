@@ -28,7 +28,7 @@ class VideoAdapter(private val videoListener: VideoListener) :
 }
 
 interface VideoListener {
-    fun onItemClicked(position: Int, id: Long)
+    fun onItemClicked(position: Int, video: Video)
     fun onItemDeleteClicked(position: Int)
     fun showDetailsClicked(video: Video)
     fun shareVideoClicked(video: Video)

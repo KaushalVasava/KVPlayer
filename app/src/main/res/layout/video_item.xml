@@ -16,31 +16,27 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/img_video"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="centerCrop"
+        style="@style/ImageViewStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="H,1.5:1"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.circleImageView"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/txt_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
+        style="@style/TextStyle"
+        android:ellipsize="end"
         android:gravity="center_vertical"
-        android:padding="3dp"
-        tools:text="Video Name"
+        android:maxLines="3"
+        android:layout_marginStart="8dp"
         android:textAllCaps="false"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_more_option"
         app:layout_constraintStart_toEndOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Video Name" />
 
     <TextView
         android:id="@+id/txt_duration"
@@ -50,22 +46,20 @@
         android:layout_marginBottom="3dp"
         android:background="@color/black"
         android:padding="2dp"
-        tools:text="2:00"
         android:textColor="@color/white"
-        android:textSize="11sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/img_video"
-        app:layout_constraintEnd_toEndOf="@+id/img_video" />
+        app:layout_constraintEnd_toEndOf="@+id/img_video"
+        tools:text="2:00" />
 
     <ImageView
         android:id="@+id/btn_more_option"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:padding="10dp"
+        style="@style/IconButton"
         android:contentDescription="@string/more_option"
+        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/videoName"
+        app:layout_constraintStart_toEndOf="@+id/txt_name"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_more" />
 </androidx.constraintlayout.widget.ConstraintLayout>
