@@ -15,6 +15,7 @@ import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.ui.adapter.FolderAdapter
 import com.lasuak.kvplayer.ui.adapter.FolderListener
 import com.lasuak.kvplayer.databinding.FragmentFolderBinding
+import com.lasuak.kvplayer.model.Folder
 import com.lasuak.kvplayer.util.FolderUtil
 
 class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
@@ -53,10 +54,10 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
         }
     }
 
-    override fun onFolderClicked(position: Int, id: Long) {
+    override fun onFolderClicked(position: Int, folder: Folder) {
         val action = FolderFragmentDirections.actionFolderFragmentToVideoFragment(
-            id,
-            folderAdapter.currentList[position].folderName
+            folder.id,
+            folder.folderName
         )
         findNavController().navigate(action)
     }

@@ -29,5 +29,5 @@ class FolderAdapter(private val listener: FolderListener) :
 }
 
 interface FolderListener {
-    fun onFolderClicked(position: Int, id: Long)
+    fun onFolderClicked(position: Int, folder: Folder)
 }

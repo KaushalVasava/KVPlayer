@@ -20,7 +20,7 @@ class FolderViewHolder(
             if (position != RecyclerView.NO_POSITION) {
                 listener.onFolderClicked(
                     position,
-                    folder.id
+                    folder
                 )
             }
         }
