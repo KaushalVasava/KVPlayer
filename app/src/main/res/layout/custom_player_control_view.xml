@@ -48,8 +48,8 @@
             android:layout_marginBottom="-5dp"
             android:layout_weight="1"
             app:buffered_color="@color/white"
-            app:played_color="@color/blue_500"
-            app:scrubber_color="@color/blue_500"
+            app:played_color="@color/red_500"
+            app:scrubber_color="@color/red_500"
             app:unplayed_color="@color/white" />
 
         <TextView

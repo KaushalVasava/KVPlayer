@@ -1,22 +1,21 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.KVPlayer" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryVariant">@color/blue_700</item>
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorPrimaryVariant">@color/red_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/blue_500</item>
-        <item name="colorSecondaryVariant">@color/blue_700</item>
+        <item name="colorSecondary">@color/red_500</item>
+        <item name="colorSecondaryVariant">@color/red_700</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-<!--        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>-->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
-    <!--Shaped Image View for Rounded corner-->
+
     <style name="Style.App.circleImageView" parent="">
         <item name="shapeAppearance">@style/ShapeAppearanceOverlay.App.circleImageView</item>
     </style>
+
     <style name="ShapeAppearanceOverlay.App.circleImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">10%</item>

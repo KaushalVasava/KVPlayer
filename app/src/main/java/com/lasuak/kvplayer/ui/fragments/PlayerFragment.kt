@@ -224,11 +224,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             binding.btnLock.setBackgroundColor(
                 ContextCompat.getColor(
                     requireContext(),
-                    R.color.transparent
+                    android.R.color.transparent
                 )
             )
         }
-
     }
 
     private fun changeVisibility(visibility: Int) {
