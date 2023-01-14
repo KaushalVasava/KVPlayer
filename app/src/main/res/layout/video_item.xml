@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
-    android:background="?attr/selectableItemBackground"
-    >
+    android:background="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -16,54 +15,54 @@
         app:layout_constraintGuide_percent="0.30" />
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/videoImage"
+        android:id="@+id/img_video"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintDimensionRatio="H,1.5:1"
         android:scaleType="centerCrop"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.circleImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="H,1.5:1"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.circleImageView"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/videoName"
+        android:id="@+id/txt_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
-        android:fontFamily="@font/roboto_condensed_regular"
-        android:gravity="start|center_vertical"
+        android:gravity="center_vertical"
         android:padding="3dp"
-        android:text="Video Name"
+        tools:text="Video Name"
         android:textAllCaps="false"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/more_option"
+        app:layout_constraintEnd_toStartOf="@id/btn_more_option"
         app:layout_constraintStart_toEndOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/duration"
+        android:id="@+id/txt_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="duration"
-        android:textSize="11sp"
-        android:padding="2dp"
-        android:layout_marginBottom="3dp"
         android:layout_marginEnd="3dp"
-        android:textColor="@color/white"
+        android:layout_marginBottom="3dp"
         android:background="@color/black"
-        app:layout_constraintBottom_toBottomOf="@id/videoImage"
-        app:layout_constraintEnd_toEndOf="@+id/videoImage"/>
+        android:padding="2dp"
+        tools:text="2:00"
+        android:textColor="@color/white"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@id/img_video"
+        app:layout_constraintEnd_toEndOf="@+id/img_video" />
 
     <ImageView
-        android:id="@+id/more_option"
+        android:id="@+id/btn_more_option"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:background="?attr/selectableItemBackground"
+        android:padding="10dp"
+        android:contentDescription="@string/more_option"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/videoName"

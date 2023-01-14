@@ -1,3 +1,7 @@
 package com.lasuak.kvplayer.model
 
-data class Folder(val folderId:Long,val folderName:String,val totalVideo:Int)
+data class Folder(
+    val id: Long,
+    val folderName: String,
+    val totalVideo: Int
+)

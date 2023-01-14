@@ -3,13 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lasuak.kvplayer">
 
-    <!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"-->
-    <!--        tools:ignore="ProtectedPermissions" />-->
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:allowBackup="true"
@@ -22,8 +20,8 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
-            android:name=".MainActivity"
-            android:configChanges="screenSize|orientation|uiMode"
+            android:name=".ui.MainActivity"
+            android:configChanges="screenSize|orientation"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,8 +30,10 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="content" android:mimeType="video/*"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:mimeType="video/*"
+                    android:scheme="content" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -55,6 +55,7 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\.mkv" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.lasuak.kvplayer.fileprovider"
@@ -64,9 +65,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_path" />
         </provider>
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/folderFragment"
-        android:name="com.lasuak.kvplayer.fragments.FolderFragment"
+        android:name="com.lasuak.kvplayer.ui.fragments.FolderFragment"
         android:label="Folders"
         tools:layout="@layout/fragment_folder">
         <action
@@ -18,19 +18,12 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_folderFragment_to_settings"
-            app:destination="@id/settings"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
-        <action
             android:id="@+id/action_folderFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
     </fragment>
     <fragment
         android:id="@+id/videoFragment"
-        android:name="com.lasuak.kvplayer.fragments.VideoFragment"
+        android:name="com.lasuak.kvplayer.ui.fragments.VideoFragment"
         android:label="{folderName}"
         tools:layout="@layout/fragment_video">
         <action
@@ -46,19 +39,12 @@
         <argument
             android:name="folderName"
             app:argType="string" />
-        <action
-            android:id="@+id/action_videoFragment_to_settings"
-            app:destination="@id/settings"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/playerFragment"
-        android:name="com.lasuak.kvplayer.fragments.PlayerFragment"
+        android:name="com.lasuak.kvplayer.ui.fragments.PlayerFragment"
         android:label="{videoName}"
-        tools:layout="@layout/fragment_player" >
+        tools:layout="@layout/fragment_player">
         <argument
             android:name="position"
             app:argType="integer" />
@@ -66,9 +52,4 @@
             android:name="videoName"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/settings"
-        android:name="com.lasuak.kvplayer.fragments.SettingsFragment"
-        android:label="Settings"
-        tools:layout="@layout/fragment_settings" />
 </navigation>

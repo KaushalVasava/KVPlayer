@@ -1,8 +1,9 @@
 package com.lasuak.kvplayer.model
 
-import android.content.Context
-import android.widget.Toast
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Video(
     val name: String,
     val path: String,
@@ -14,9 +15,4 @@ data class Video(
     val resolution: String?,
     val height: Int,
     val width: Int
-)
-
-fun notifyUser(context: Context, message: String) {
-    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-}
-
+) : Parcelable
