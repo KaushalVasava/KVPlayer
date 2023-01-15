@@ -105,7 +105,6 @@ object FolderUtil {
                     cursor.getString(1)
                 }
                 val file = File(path)
-                scannedFile(context, path)
                 if (file.exists()) {
                     videoCount++
                 }
@@ -151,7 +150,7 @@ object FolderUtil {
                 MediaStore.Video.VideoColumns.HEIGHT,
                 MediaStore.Video.VideoColumns.WIDTH,
                 MediaStore.Video.Media.DISPLAY_NAME
-                )
+            )
         }
         val cursor = context.contentResolver.query(
             uri,
@@ -189,19 +188,18 @@ object FolderUtil {
         return video!!
     }
 
-    private fun scannedFile(context: Context, path: String) {
-        try {
-            MediaScannerConnection.scanFile(
-                context, arrayOf(path),
-                null
-            ) { p, uri ->
-                if (uri != null) {
-                    Log.d("TAG", "scannedFile: $uri and $p")
-                }
+    private fun scannedFile(context: Context, path: String): Boolean {
+        return try {
+            var isFileFound = false
+            MediaScannerConnection.scanFile(context, arrayOf(path), null) { p, uri ->
+                Log.d("TAG", "scannedFile: found $p and $uri")
+                isFileFound = uri != null
             }
+            isFileFound
         } catch (e: Exception) {
-            Log.i("TAG", "error uri= $path")
+            Log.d("TAG", "scannedFile: error")
             e.printStackTrace()
+            false
         }
     }
 }

@@ -33,4 +33,7 @@
     <string name="total_videos">%s videos</string>
     <string name="subtitle_on">Subtitle turned on</string>
     <string name="subtitle_off">Subtitle turned off</string>
+    <string name="no_recently_video_found">No recently played video found</string>
+    <string name="search">Search</string>
+    <string name="search_video">Search video</string>
 </resources>

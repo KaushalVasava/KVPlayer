@@ -16,6 +16,7 @@ import com.lasuak.kvplayer.ui.adapter.FolderAdapter
 import com.lasuak.kvplayer.ui.adapter.FolderListener
 import com.lasuak.kvplayer.databinding.FragmentFolderBinding
 import com.lasuak.kvplayer.model.Folder
+import com.lasuak.kvplayer.util.AppConstant
 import com.lasuak.kvplayer.util.FolderUtil
 
 class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
@@ -86,11 +87,12 @@ class FolderFragment : Fragment(R.layout.fragment_folder), FolderListener {
     }
 
     private fun getSharedPrefData() {
-        val pref = requireContext().getSharedPreferences("LAST_VIDEO_DATA", Context.MODE_PRIVATE)
-        val videoId = pref.getLong("VIDEO_ID", -1L)
-        val folderId = pref.getLong("FOLDER_ID", -1L)
+        val pref =
+            requireContext().getSharedPreferences(AppConstant.LAST_VIDEO_DATA, Context.MODE_PRIVATE)
+        val videoId = pref.getLong(AppConstant.VIDEO_ID, -1L)
+        val folderId = pref.getLong(AppConstant.FOLDER_ID, -1L)
         if (folderId == -1L && videoId == -1L) {
-            Toast.makeText(requireContext(), "No recently played video found", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.no_recently_video_found), Toast.LENGTH_SHORT)
                 .show()
         } else {
             val video = FolderUtil.findVideo(requireContext(), folderId, videoId)

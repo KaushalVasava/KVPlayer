@@ -11,4 +11,7 @@ object AppConstant {
     const val LIKE_TYPE = " like? "
     const val SIZE_FLOAT_FORMAT = "%.2f"
     const val ORDER_ASC = " ASC"
+    const val LAST_VIDEO_DATA = "LAST_VIDEO_DATA"
+    const val VIDEO_ID = "VIDEO_ID"
+    const val FOLDER_ID = "FOLDER_ID"
 }

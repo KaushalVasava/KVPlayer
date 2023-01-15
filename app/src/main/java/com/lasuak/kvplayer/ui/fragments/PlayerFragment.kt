@@ -27,6 +27,7 @@ import com.lasuak.kvplayer.R
 import com.lasuak.kvplayer.databinding.FragmentPlayerBinding
 import com.lasuak.kvplayer.model.Video
 import com.lasuak.kvplayer.ui.viewmodel.PlayerViewModel
+import com.lasuak.kvplayer.util.AppConstant
 import com.lasuak.kvplayer.util.AppUtil
 import com.lasuak.kvplayer.util.VideoUtil
 import kotlinx.coroutines.delay
@@ -43,7 +44,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private var position: Int = -1
     private var isFullscreenEnable = false
     private var isLocked = false
-    private var brightness = -1.0f
+    private var brightness = 0.0f
     private var isMuted = false
     private var isRotated = false
     private var isSubtitleEnable = true
@@ -70,8 +71,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private fun setInitialData() {
         binding.seekBarVolume.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        val layout = requireActivity().window.attributes
-        binding.seekBarBrightness.progress = layout.screenBrightness.roundToInt()
+        binding.seekBarBrightness.progress = 0
     }
 
     private fun checkOrientation() {
@@ -284,15 +284,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding.videoView.player = exoPlayer
         viewModel.trackSelector = DefaultTrackSelector(requireContext())
 
-        if (video.height < video.width) {
-            //for landscape
-            (activity as AppCompatActivity).requestedOrientation =
+        (activity as AppCompatActivity).requestedOrientation =
+            if (video.height < video.width) {
+                //for landscape
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            //for portrait
-            (activity as AppCompatActivity).requestedOrientation =
+            } else {
+                //for portrait
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
+            }
         exoPlayer?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
@@ -364,14 +363,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         exoPlayer?.playWhenReady = false
         exoPlayer?.playbackState
         val layout = requireActivity().window.attributes
-        layout.screenBrightness = -1.0f
+        layout.screenBrightness = 0.0f
         requireActivity().window.attributes = layout
     }
 
     override fun onResume() {
         super.onResume()
         val layout = requireActivity().window.attributes
-        if (brightness == -1.0f) {
+        if (brightness == 0.0f) {
             brightness = layout.screenBrightness
         } else {
             layout.screenBrightness = brightness
@@ -387,15 +386,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     }
 
     private fun setRotation() {
-        if (isRotated) {
-            (activity as AppCompatActivity).requestedOrientation =
+        (activity as AppCompatActivity).requestedOrientation =
+            if (isRotated) {
+                isRotated = false
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            isRotated = false
-        } else {
-            (activity as AppCompatActivity).requestedOrientation =
+            } else {
+                isRotated = true
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            isRotated = true
-        }
+            }
     }
 
     private fun playInFullScreen(isEnable: Boolean) {
@@ -403,13 +401,12 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             binding.videoView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
             exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
             binding.exoFullscreen.setImageResource(R.drawable.ic_fullscreen_exit)
-            isFullscreenEnable = true
         } else {
             binding.videoView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
             exoPlayer?.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
             binding.exoFullscreen.setImageResource(R.drawable.ic_fullscreen)
-            isFullscreenEnable = false
         }
+        isFullscreenEnable = isEnable
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -460,16 +457,17 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        requireActivity().getSharedPreferences("LAST_VIDEO_DATA", Context.MODE_PRIVATE).edit()
+        requireActivity().getSharedPreferences(AppConstant.LAST_VIDEO_DATA, Context.MODE_PRIVATE)
+            .edit()
             .apply {
-                putLong("VIDEO_ID", videoList[position].id)
-                putLong("FOLDER_ID", args.folderId)
+                putLong(AppConstant.VIDEO_ID, videoList[position].id)
+                putLong(AppConstant.FOLDER_ID, args.folderId)
                 apply()
             }
         (activity as AppCompatActivity).supportActionBar!!.show()
         exoPlayer?.stop()
         exoPlayer?.release()
-        brightness = -1.0f
+        brightness = 0.0f
         //this is for orientation change when exit from player fragment
         resetOrientation()
     }

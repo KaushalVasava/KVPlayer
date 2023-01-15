@@ -2,6 +2,7 @@ package com.lasuak.kvplayer.ui.fragments
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -26,7 +27,6 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
     companion object {
         const val VIDEO_LIST_BUNDLE_KEY = "video_list_bundle_key"
         const val VIDEO_BUNDLE_KEY = "video_bundle_key"
-//        const val LAST_VIDEO_POSITION = "last_video_position"
     }
 
     override fun onCreateView(
@@ -34,6 +34,8 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentVideoBinding.inflate(inflater, container, false)
+        @Suppress("deprecation")
+        setHasOptionsMenu(true)
         videoAdapter = VideoAdapter(this)
         binding.recyclerView.apply {
             setHasFixedSize(true)
@@ -43,6 +45,32 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
         videoAdapter.submitList(videoList)
         setVideoListResult(videoList)
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_menu, menu)
+        val searchByContract = menu.findItem(R.id.search)
+        val searchContractView = searchByContract.actionView as SearchView
+        searchContractView.queryHint = getString(R.string.search_video)
+
+        searchContractView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    val videoList = VideoUtil.getVideosByFolder(requireContext(), args.folderId)
+                    videoAdapter.submitList(videoList)
+                    videoAdapter.setData(videoList)
+                } else {
+                    videoAdapter.filter.filter(newText)
+                }
+                return false
+            }
+        })
+        @Suppress("deprecation")
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun setVideoListResult(videoList: List<Video>) {
