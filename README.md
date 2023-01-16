@@ -20,6 +20,7 @@ Following android component you can learn:
 
 ![Screenshot_2023-01-15-18-40-47-049_com lasuak kvplayer](https://user-images.githubusercontent.com/49050597/212663608-c60e6616-23bd-4b87-a9b8-21eab19b8a1c.jpg)
 ![Screenshot_2023-01-15-18-40-32-229_com lasuak kvplayer](https://user-images.githubusercontent.com/49050597/212663612-4fb2978f-82cc-4c77-a45c-b888efb38e03.jpg)
+![Screenshot_2023-01-16-16-35-44-039_com lasuak kvplayer](https://user-images.githubusercontent.com/49050597/212664131-7ee130ec-f39e-45b4-baa4-7a22d7a0299c.jpg)
 
 Made by Kaushal Vasava
 
