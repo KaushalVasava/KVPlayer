@@ -36,4 +36,9 @@
     <string name="no_recently_video_found">No recently played video found</string>
     <string name="search">Search</string>
     <string name="search_video">Search video</string>
+    <string name="select_language">Select Language</string>
+    <string name="default_language">Default</string>
+    <string name="select_subtitle">Select subtitle</string>
+    <string name="off_subtitle">Off</string>
+    <string name="item_selected">%s selected</string>
 </resources>

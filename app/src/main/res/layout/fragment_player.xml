@@ -36,8 +36,9 @@
         android:id="@+id/txt_brightness"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/seekBarBrightness"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@id/seekBarBrightness"
+        app:layout_constraintStart_toStartOf="@id/seekBarBrightness"
         app:layout_constraintTop_toBottomOf="@id/seekBarBrightness" />
 
     <SeekBar
@@ -54,6 +55,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txt_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/seekBarVolume"
+        app:layout_constraintStart_toStartOf="@id/seekBarVolume"
+        app:layout_constraintTop_toBottomOf="@id/seekBarVolume" />
 
     <LinearLayout
         android:id="@id/exo_center_controls"
@@ -102,12 +112,13 @@
 
     </LinearLayout>
 
-
     <TextView
         android:id="@+id/btn_back_name"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
+        android:layout_marginStart="16dp"
         android:layout_weight="1"
+        android:drawablePadding="8dp"
         android:ellipsize="marquee"
         android:gravity="center"
         android:marqueeRepeatLimit="marquee_forever"
@@ -127,8 +138,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:padding="16dp"
         android:contentDescription="@string/lock"
+        android:padding="16dp"
         android:src="@drawable/ic_lock_open"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -138,8 +149,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:padding="16dp"
         android:contentDescription="@string/sub_title"
+        android:padding="16dp"
         android:src="@drawable/ic_subtitles"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_lock" />
@@ -150,8 +161,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:background="@android:color/transparent"
-        android:padding="10dp"
         android:contentDescription="@string/mute"
+        android:padding="10dp"
         android:src="@drawable/ic_volume_up_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_screen_rotation" />
@@ -162,11 +173,11 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:background="@android:color/transparent"
+        android:contentDescription="@string/screen_rotation"
         android:padding="10dp"
         android:src="@drawable/ic_screen_rotation"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/exo_fullscreen"
-        android:contentDescription="@string/screen_rotation" />
+        app:layout_constraintEnd_toStartOf="@id/exo_fullscreen" />
 
     <ImageButton
         android:id="@id/exo_fullscreen"
@@ -175,8 +186,8 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:background="@android:color/transparent"
-        android:padding="10dp"
         android:contentDescription="@string/full_screen"
+        android:padding="10dp"
         android:src="@drawable/ic_fullscreen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/btn_audio_track" />
@@ -188,8 +199,8 @@
         android:layout_marginEnd="5dp"
         android:layout_marginBottom="5dp"
         android:background="@android:color/transparent"
-        android:padding="10dp"
         android:contentDescription="@string/audio_track"
+        android:padding="10dp"
         android:src="@drawable/ic_audiotrack"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

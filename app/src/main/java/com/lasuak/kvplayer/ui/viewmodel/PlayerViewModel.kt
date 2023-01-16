@@ -10,8 +10,8 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.lasuak.kvplayer.R
+import com.lasuak.kvplayer.util.AppConstant
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PlayerViewModel : ViewModel() {
     var trackSelector: DefaultTrackSelector? = null
@@ -25,34 +25,37 @@ class PlayerViewModel : ViewModel() {
     }
 
     fun setAudioTrack(context: Context, exoPlayer: ExoPlayer) {
-        playClicked(exoPlayer)
-        val pref = context.getSharedPreferences("AUDIO_TRACK", Context.MODE_PRIVATE)
-        var selectedTrack = pref.getInt("selectedTrack", 0)
+        if (exoPlayer.isPlaying) {
+            playClicked(exoPlayer)
+        }
+        val pref = context.getSharedPreferences(AppConstant.AUDIO_TRACK, Context.MODE_PRIVATE)
+        var selectedTrack = pref.getInt(AppConstant.SELECTED_AUDIO_TRACK, 0)
 
-        val audioTracks = ArrayList<String>()
-
+        val audioTracks = mutableListOf<String>()
         //track fetching
-        for (i in 0 until exoPlayer.currentTracksInfo.trackGroupInfos.size) {
-            if (exoPlayer.currentTracksInfo.trackGroupInfos[0].trackGroup.getFormat(0).selectionFlags == C.SELECTION_FLAG_DEFAULT) {
+        val trackGroup = exoPlayer.currentTracks.groups
+        for (i in 0 until trackGroup.size) {
+            val d = trackGroup[i].mediaTrackGroup.getFormat(0)
+            if (trackGroup[i].mediaTrackGroup.type == C.TRACK_TYPE_AUDIO) {
                 audioTracks.add(
-                    Locale(
-                        exoPlayer.currentTracksInfo.trackGroupInfos[i].trackGroup.getFormat(0).language.toString()
-                    ).displayLanguage
+                    trackGroup[i].mediaTrackGroup.getFormat(0).language.toString()
                 )
             }
         }
-
-        if (audioTracks.size != 0) {
-            audioTracks.removeAt(0)
-        }
-        if (audioTracks.size == 0) {
-            audioTracks.add("Default")
+        if (audioTracks.isEmpty()) {
+            audioTracks.add(context.getString(R.string.default_language))
             selectedTrack = 0
         }
-        val tempTrack = audioTracks.toArray(arrayOfNulls<CharSequence>(audioTracks.size))
+        val tempTrack = audioTracks.map { s ->
+            if (s == context.getString(R.string.default_language)) {
+                s
+            } else {
+                Locale(s).displayLanguage
+            }
+        }.toTypedArray()
 
         MaterialAlertDialogBuilder(context)
-            .setTitle("Select Language")
+            .setTitle(context.getString(R.string.select_language))
             .setOnCancelListener {
                 it.dismiss()
                 playClicked(exoPlayer)
@@ -61,7 +64,7 @@ class PlayerViewModel : ViewModel() {
             .setSingleChoiceItems(tempTrack, selectedTrack) { dialog, which ->
                 Toast.makeText(
                     context,
-                    "${audioTracks[which]} Selected",
+                    context.getString(R.string.item_selected, tempTrack[which]),
                     Toast.LENGTH_SHORT
                 ).show()
                 exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
@@ -71,29 +74,90 @@ class PlayerViewModel : ViewModel() {
                     .build()
                 playClicked(exoPlayer)
                 val editor =
-                    context.getSharedPreferences("AUDIO_TRACK", Context.MODE_PRIVATE).edit()
-                editor.putInt("selectedTrack", which)
+                    context.getSharedPreferences(AppConstant.AUDIO_TRACK, Context.MODE_PRIVATE)
+                        .edit()
+                editor.putInt(AppConstant.SELECTED_AUDIO_TRACK, which)
                 editor.apply()
                 dialog.dismiss()
             }
             .show()
     }
 
-    fun setSubtitle(context: Context, exoPlayer: ExoPlayer, isSubtitleEnable: Boolean): Boolean {
-        playClicked(exoPlayer)
-        return if (isSubtitleEnable) {
-            trackSelector?.parameters = DefaultTrackSelector.ParametersBuilder(context)
-                .setRendererDisabled(C.TRACK_TYPE_VIDEO, true).build()
-            Toast.makeText(context, context.getString(R.string.subtitle_off), Toast.LENGTH_SHORT).show()
+    fun setSubtitle(context: Context, exoPlayer: ExoPlayer): Boolean {
+        if (exoPlayer.isPlaying) {
             playClicked(exoPlayer)
-            false
-        } else {
-            trackSelector?.parameters = DefaultTrackSelector.ParametersBuilder(context)
-                .setRendererDisabled(C.TRACK_TYPE_VIDEO, false).build()
-            Toast.makeText(context, context.getString(R.string.subtitle_on), Toast.LENGTH_SHORT).show()
-            playClicked(exoPlayer)
-            true
         }
+        val pref = context.getSharedPreferences(AppConstant.SUBTITLE_TRACK, Context.MODE_PRIVATE)
+        var selectedTrack = pref.getInt(AppConstant.SELECTED_SUBTITLE_TRACK, 0)
+
+        val subtitleTracks = mutableListOf<String>()
+        subtitleTracks.add(context.getString(R.string.off_subtitle))
+        //track fetching
+        val trackGroup = exoPlayer.currentTracks.groups
+        for (i in 0 until trackGroup.size) {
+            if (trackGroup[i].mediaTrackGroup.type == C.TRACK_TYPE_TEXT) {
+                subtitleTracks.add(
+                    trackGroup[i].mediaTrackGroup.getFormat(0).language.toString()
+                )
+            }
+        }
+        val tempTrack = subtitleTracks.mapIndexed { index, s ->
+            if (index == 0) {
+                s
+            } else {
+                Locale(s).displayLanguage
+            }
+        }.toTypedArray()
+
+        if (subtitleTracks.isEmpty()) {
+            selectedTrack = 0
+        }
+        var isSubtitleSelected = false
+        MaterialAlertDialogBuilder(context)
+            .setTitle(context.getString(R.string.select_subtitle))
+            .setOnCancelListener {
+                trackSelector?.setParameters(
+                    DefaultTrackSelector.Parameters.Builder(context)
+                        .setRendererDisabled(C.TRACK_TYPE_VIDEO, true)
+                )
+                it.dismiss()
+                playClicked(exoPlayer)
+            }
+            //single choice dialog
+            .setSingleChoiceItems(tempTrack, selectedTrack) { dialog, which ->
+                if (which == 0) {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.subtitle_off),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    trackSelector?.setParameters(
+                        DefaultTrackSelector.Parameters.Builder(context)
+                            .setRendererDisabled(C.TRACK_TYPE_VIDEO, true)
+                    )
+                } else {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.item_selected, tempTrack[which]),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                isSubtitleSelected = which != 0
+                trackSelector?.setParameters(
+                    DefaultTrackSelector.Parameters.Builder(context)
+                        .setRendererDisabled(C.TRACK_TYPE_VIDEO, false)
+                        .setPreferredTextLanguage(subtitleTracks[which])
+                )
+                playClicked(exoPlayer)
+                val editor =
+                    context.getSharedPreferences(AppConstant.SUBTITLE_TRACK, Context.MODE_PRIVATE)
+                        .edit()
+                editor.putInt(AppConstant.SELECTED_SUBTITLE_TRACK, which)
+                editor.apply()
+                dialog.dismiss()
+            }
+            .show()
+        return isSubtitleSelected
     }
 
     fun muteClicked(isMuted: Boolean, audioManager: AudioManager): Boolean {

@@ -11,6 +11,8 @@ import android.view.*
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -39,15 +41,15 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private val args: PlayerFragmentArgs by navArgs()
     private val viewModel: PlayerViewModel by viewModels()
     private lateinit var audioManager: AudioManager
-    private var exoPlayer: ExoPlayer? = null
     private val videoList = mutableListOf<Video>()
     private var position: Int = -1
     private var isFullscreenEnable = false
     private var isLocked = false
-    private var brightness = 0.0f
+    private var brightness = -1.0f
     private var isMuted = false
     private var isRotated = false
     private var isSubtitleEnable = true
+    private var exoPlayer: ExoPlayer? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,38 +64,49 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             videoList.addAll(VideoUtil.getVideosByFolder(requireContext(), args.folderId))
             createPlayer()
         }
-        checkOrientation()
         addClickListeners()
         addSeekbarChangeListeners()
         setVisibility()
-        setInitialData()
     }
 
-    private fun setInitialData() {
-        binding.seekBarVolume.progress = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        binding.seekBarBrightness.progress = 0
-    }
+    private fun createPlayer() {
+        val video = if (position != -1) {
+            videoList[position]
+        } else {
+            position = VideoUtil.findVideoPosition(args.video.id, videoList)
+            args.video
+        }
+        viewModel.trackSelector = DefaultTrackSelector(requireContext())
+        exoPlayer = ExoPlayer.Builder(requireContext())
+            .setTrackSelector(viewModel.trackSelector!!)
+            .build()
+        binding.btnBackName.text = video.name
+        val path: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            AppUtil.getRealPath(Uri.parse(video.path), requireContext()) ?: video.path
+        } else {
+            video.path
+        }
+        val mediaItem = MediaItem.fromUri(path)
+        exoPlayer?.setMediaItem(mediaItem)
+        exoPlayer?.prepare()
+        binding.videoView.player = exoPlayer
 
-    private fun checkOrientation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val controller = (activity as AppCompatActivity).window.insetsController
-            if (controller != null) {
-                if (controller.systemBarsBehavior == 0) {
-                    controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                    controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                } else {
-                    controller.show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                    controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        (activity as AppCompatActivity).requestedOrientation =
+            if (video.height < video.width) {
+                //for landscape
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                //for portrait
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+        exoPlayer?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                super.onPlaybackStateChanged(playbackState)
+                if (playbackState == Player.STATE_ENDED) {
+                    nextClicked()
                 }
             }
-        } else {
-            val attrs = (activity as AppCompatActivity).window.attributes
-            @Suppress("deprecation")
-            attrs.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN
-            requireActivity().window.attributes = attrs
-        }
+        })
     }
 
     private fun addClickListeners() {
@@ -138,7 +151,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         binding.exoSubtitle.setOnClickListener {
             exoPlayer?.let {
-                isSubtitleEnable = viewModel.setSubtitle(requireContext(), it, isSubtitleEnable)
+                isSubtitleEnable = viewModel.setSubtitle(requireContext(), it)
             }
         }
     }
@@ -174,8 +187,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                     newVolume: Int,
                     fromUser: Boolean
                 ) {
+                    val volume = newVolume / 10
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
+                    binding.txtVolume.text = newVolume.toString()
 
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -186,35 +201,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                     /* no-op */
                 }
             })
-    }
-
-    private fun resetOrientation() {
-        (activity as AppCompatActivity).requestedOrientation =
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val controller = requireActivity().window.insetsController
-            if (controller != null) {
-                if (controller.systemBarsBehavior == 0) {
-                    controller.show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                    controller.systemBarsBehavior =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            WindowInsetsController.BEHAVIOR_DEFAULT
-                        } else {
-                            @Suppress("deprecation")
-                            WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
-                        }
-                } else {
-                    controller.show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                    controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                }
-            }
-        } else {
-            val attrs = requireActivity().window.attributes
-            attrs.flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-            requireActivity().window.attributes = attrs
-        }
     }
 
     private fun setLockPlayer() {
@@ -255,6 +241,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding.seekBarBrightness.visibility = visibility
         binding.seekBarVolume.visibility = visibility
         binding.txtBrightness.visibility = visibility
+        binding.txtVolume.visibility = visibility
         binding.btnAudioTrack.visibility = visibility
         binding.exoSubtitle.visibility = visibility
 
@@ -262,44 +249,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             binding.btnLock.visibility = View.VISIBLE
         else
             binding.btnLock.visibility = visibility
-    }
-
-    private fun createPlayer() {
-        val video = if (position != -1) {
-            videoList[position]
-        } else {
-            position = VideoUtil.findVideoPosition(args.video.id, videoList)
-            args.video
-        }
-        exoPlayer = ExoPlayer.Builder(requireContext()).build()
-        binding.btnBackName.text = video.name
-        val path: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            AppUtil.getRealPath(Uri.parse(video.path), requireContext()) ?: video.path
-        } else {
-            video.path
-        }
-        val mediaItem = MediaItem.fromUri(path)
-        exoPlayer?.setMediaItem(mediaItem)
-        exoPlayer?.prepare()
-        binding.videoView.player = exoPlayer
-        viewModel.trackSelector = DefaultTrackSelector(requireContext())
-
-        (activity as AppCompatActivity).requestedOrientation =
-            if (video.height < video.width) {
-                //for landscape
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            } else {
-                //for portrait
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
-        exoPlayer?.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
-                if (playbackState == Player.STATE_ENDED) {
-                    nextClicked()
-                }
-            }
-        })
     }
 
     private fun previousClicked() {
@@ -354,34 +303,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 else
                     changeVisibility(View.INVISIBLE)
             }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //for pause video
-        exoPlayer?.playWhenReady = false
-        exoPlayer?.playbackState
-        val layout = requireActivity().window.attributes
-        layout.screenBrightness = 0.0f
-        requireActivity().window.attributes = layout
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val layout = requireActivity().window.attributes
-        if (brightness == 0.0f) {
-            brightness = layout.screenBrightness
-        } else {
-            layout.screenBrightness = brightness
-        }
-        val tempLight: Int = (100 * (brightness)).roundToInt()
-        requireActivity().window.attributes = layout
-        binding.seekBarBrightness.progress = tempLight
-        binding.txtBrightness.text = tempLight.toString()
-        exoPlayer?.let {
-            it.playWhenReady = true
-            it.playbackState
         }
     }
 
@@ -446,17 +367,58 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         }
     }
 
-//    private fun setVideoPositionResult() {
-//        setFragmentResult(
-//            VIDEO_POSITION_BUNDLE_RESULT_KEY,
-//            bundleOf(
-//               VIDEO_POSITION_RESULT_KEY to position,
-//            )
-//        )
-//    }
+    private fun hideSystemUI() {
+        val windowInsetsController = WindowInsetsControllerCompat(
+            requireActivity().window,
+            requireActivity().window.decorView
+        )
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun showSystemUI() {
+        val insetsController = WindowInsetsControllerCompat(
+            requireActivity().window,
+            requireActivity().window.decorView
+        )
+        insetsController.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //for pause video
+        exoPlayer?.playWhenReady = false
+        exoPlayer?.playbackState
+        val layout = requireActivity().window.attributes
+        layout.screenBrightness = -1.0f
+        requireActivity().window.attributes = layout
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideSystemUI()
+        val layout = requireActivity().window.attributes
+        if (brightness == -1.0f) {
+            brightness = layout.screenBrightness
+        } else {
+            layout.screenBrightness = brightness
+        }
+        val tempLight: Int = (100 * (brightness)).roundToInt()
+        requireActivity().window.attributes = layout
+        binding.seekBarBrightness.progress = tempLight
+        binding.txtBrightness.text = tempLight.toString()
+        exoPlayer?.let {
+            it.playWhenReady = true
+            it.playbackState
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        showSystemUI()
+        (activity as AppCompatActivity).requestedOrientation =
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR
         requireActivity().getSharedPreferences(AppConstant.LAST_VIDEO_DATA, Context.MODE_PRIVATE)
             .edit()
             .apply {
@@ -467,9 +429,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         (activity as AppCompatActivity).supportActionBar!!.show()
         exoPlayer?.stop()
         exoPlayer?.release()
-        brightness = 0.0f
-        //this is for orientation change when exit from player fragment
-        resetOrientation()
+        brightness = -1.0f
     }
 
     companion object {
