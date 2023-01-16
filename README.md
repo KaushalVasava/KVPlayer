@@ -26,7 +26,7 @@ Screenshots:
 ![Screenshot_2023-01-16-16-35-44-039_com lasuak kvplayer](https://user-images.githubusercontent.com/49050597/212664131-7ee130ec-f39e-45b4-baa4-7a22d7a0299c.jpg)
 
 Video : 
-https://user-images.githubusercontent.com/49050597/212664325-1b63a429-f42e-44d3-9d0e-bf8b2e75cb7d.mp4
+[Screenshot_2023-01-16-16-35-44-039_com lasuak kvplayer](https://user-images.githubusercontent.com/49050597/212664325-1b63a429-f42e-44d3-9d0e-bf8b2e75cb7d.mp4)
 
 Made by Kaushal Vasava
 
