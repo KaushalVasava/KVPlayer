@@ -18,6 +18,7 @@ Following android component you can learn:
 - DiffUtil in recyclerview 
 - MVVM architecture
 - SharedPreference
+- Glide library for image load
 
 Screenshots :
 
