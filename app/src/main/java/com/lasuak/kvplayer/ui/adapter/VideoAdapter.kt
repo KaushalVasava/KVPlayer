@@ -10,12 +10,18 @@ import androidx.recyclerview.widget.ListAdapter
 import com.lasuak.kvplayer.ui.adapter.viewholder.VideoViewHolder
 import com.lasuak.kvplayer.databinding.VideoItemBinding
 import com.lasuak.kvplayer.model.Video
+import me.zhanghai.android.fastscroll.PopupTextProvider
 
 class VideoAdapter(private val videoListener: VideoListener) :
-    ListAdapter<Video, VideoViewHolder>(VideoDiffCallback()), Filterable {
+    ListAdapter<Video, VideoViewHolder>(VideoDiffCallback()), Filterable, PopupTextProvider {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoViewHolder {
         val binding = VideoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return VideoViewHolder(binding, videoListener)
+    }
+
+    override fun getPopupText(position: Int): String {
+        val item = getItem(position)
+        return item.name.substring(0, 1)
     }
 
     override fun onBindViewHolder(holder: VideoViewHolder, position: Int) {

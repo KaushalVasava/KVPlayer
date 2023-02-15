@@ -16,6 +16,7 @@ import com.lasuak.kvplayer.databinding.FragmentVideoBinding
 import com.lasuak.kvplayer.model.Video
 import com.lasuak.kvplayer.ui.viewmodel.VideoViewModel
 import com.lasuak.kvplayer.util.VideoUtil
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 
 class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
 
@@ -39,6 +40,7 @@ class VideoFragment : Fragment(R.layout.fragment_video), VideoListener {
         videoAdapter = VideoAdapter(this)
         binding.recyclerView.apply {
             setHasFixedSize(true)
+            FastScrollerBuilder(this).build() // scrollbar
             adapter = videoAdapter
         }
         val videoList = VideoUtil.getVideosByFolder(requireContext(), args.folderId)
